@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { Geolocation } from '@capacitor/geolocation';
+import { Geolocation as GeolocationIonicNative} from '@ionic-native/geolocation/ngx';
 
 @Component({
   selector: 'app-home',
@@ -9,7 +10,9 @@ import { Geolocation } from '@capacitor/geolocation';
 export class HomePage {
     public status: string = 'not started';
     
-  constructor() {}
+    constructor(
+	private geolocation: GeolocationIonicNative
+    ){}
 
     async getCurrentPosition(): Promise<void>{
 	await Geolocation.requestPermissions();
@@ -21,5 +24,17 @@ export class HomePage {
 	    console.log(error.message);
 	    this.status = error.message;
 	}
+    }
+
+    getCurrentPositionIonicNative(): void{
+	this.geolocation.getCurrentPosition().then((resp) => {
+	    console.log(resp);
+	    // resp.coords.latitude
+	    // resp.coords.longitude
+	    this.status = resp.coords.latitude + ', ' + resp.coords.longitude;
+	}).catch((error) => {
+	    console.log('Error getting location', error);
+	    this.status = JSON.stringify(error.message);
+	});
     }
 }
